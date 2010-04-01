@@ -10,7 +10,7 @@ class Url
   has n, :clicks
 
   def url= value
-    self['url'] = URI.parse(value).normalize.to_s
+    self['url'] = URI.parse(value).normalize.to_s if value and not value.empty?
   end
 
   def self.shorten url_to_shorten
