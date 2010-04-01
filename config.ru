@@ -1,6 +1,13 @@
-%w( rubygems bundler ).each {|lib| require lib }
-Bundler.setup
-Bundler.require
+begin
+  # Require the preresolved locked set of gems.
+  require ::File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fallback on doing the resolve at runtime.
+  require 'rubygems'
+  require 'bundler'
+  Bundler.setup
+end
+
 require File.dirname(__FILE__) + '/sinatra-based-url-shortener'
 
 if ENV['RACK_ENV'] == 'production'
