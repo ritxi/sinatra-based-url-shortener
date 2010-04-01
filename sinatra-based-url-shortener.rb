@@ -12,6 +12,11 @@ class SinatraBasedUrlShortener < Sinatra::Base
     haml :index
   end
 
+  get '/:slug/history' do |slug|
+    @url = Url.first :slug => slug
+    haml :history
+  end
+
   get '/:slug' do |slug|
     @url = Url.first :slug => slug
     if @url
@@ -66,3 +71,25 @@ __END__
     - for url in Url.all(:limit => 10, :order => :created_at.desc)
       %li
         %a{ :href => full_url(url.slug) }= url.url
+        (
+        %a{ :href => "/#{ url.slug }/history" } history
+        )
+
+@@ history
+%dl
+  %dt Url
+  %dd
+    %a{ :href => @url.url }= @url.url
+
+  %dt Shortened
+  %dd
+    %a{ :href => full_url(@url.slug) }= full_url(@url.slug)
+
+  %dt Number of times visited
+  %dd= @url.clicks.count
+
+  %dt Recent history
+  %dd
+    %ul
+      - for click in @url.clicks.all(:limit => 10, :order => :created_at.desc)
+        %li== #{ click.ip_address } at #{ click.created_at } from #{ click.referrer }

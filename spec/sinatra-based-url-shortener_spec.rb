@@ -80,4 +80,25 @@ describe SinatraBasedUrlShortener do
     Url.first.clicks.count.should == 2
   end
 
+  it 'can view the history of a shortened url' do
+    visit '/'
+    fill_in 'url', :with => 'http://www.google.com'
+    click_button 'Shorten'
+    
+    visit '/aaa/history'
+    page.should have_no_content('127.0.0.1')
+
+    visit '/aaa'
+    visit '/aaa/history'
+    page.should have_content('127.0.0.1')
+    page.should have_no_content('5') # <--- times we'll visit
+
+    visit '/aaa'
+    visit '/aaa'
+    visit '/aaa'
+    visit '/aaa'
+    visit '/aaa/history'
+    page.should have_content('5')
+  end
+
 end
