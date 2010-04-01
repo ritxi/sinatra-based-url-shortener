@@ -98,19 +98,23 @@ describe SinatraBasedUrlShortener do
 
   it 'requires SSL when you POST to / (if SinatraBasedUrlShortener.ssl_required?)' do
     SinatraBasedUrlShortener.ssl_required = true
+    get '/'
+    last_response.body.should include('https://') # <-- the form should POST to an https:// url
 
     post '/', :url => 'http://www.google.com'
     last_response.status.should == 403
     Url.count.should == 0
 
     SinatraBasedUrlShortener.ssl_required = false
+    get '/'
+    last_response.body.should_not include('https://') # no https:// url should be present
 
     post '/', :url => 'http://www.google.com'
     last_response.status.should == 200
     Url.count.should == 1
   end
 
-  it 'requires SSL when you POST to / (if SinatraBasedUrlShortener.basic_auth_required?)' do
+  it 'requires HTTP Basic Auth when you POST to / (if SinatraBasedUrlShortener.basic_auth_required?)' do
     SinatraBasedUrlShortener.basic_auth_required = true
 
     post '/', :url => 'http://www.google.com'

@@ -59,6 +59,14 @@ class SinatraBasedUrlShortener < Sinatra::Base
     def full_url slug
       'http://' + request.host + '/' + slug
     end
+
+    def ssl_path path
+      if SinatraBasedUrlShortener.ssl_required?
+        'https://' + request.host + path
+      else
+        path
+      end
+    end
   end
 
   use_in_file_templates!
@@ -77,7 +85,7 @@ __END__
     = yield
 
 @@ index
-%form{ :action => '/', :method => 'post' }
+%form{ :action => ssl_path('/'), :method => 'post' }
   %label
     URL to Shorten
     %input{ :type => 'text', :placeholder => 'http://www.google.com/', :autofocus => true, :name => 'url', :id => 'url', :value => (@url ? @url.url : '') }
