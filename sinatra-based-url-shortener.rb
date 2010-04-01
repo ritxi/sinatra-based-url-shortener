@@ -1,13 +1,17 @@
 %w( rubygems sinatra/base haml dm-core dm-aggregates dm-validations dm-timestamps ).each {|lib| require lib }
-%w( unique_slug url click ).each {|file| require File.dirname(__FILE__) + "/#{file}" }
+%w( unique_slug url click http_basic_auth ).each {|file| require File.dirname(__FILE__) + "/#{file}" }
 
 class SinatraBasedUrlShortener < Sinatra::Base
 
   class << self
-    attr_accessor :ssl_required
+    attr_accessor :ssl_required, :basic_auth_required
 
     def ssl_required?
       (ssl_required == true) ? true : false
+    end
+
+    def basic_auth_required?
+      (basic_auth_required == true) ? true : false
     end
   end
 
@@ -16,6 +20,8 @@ class SinatraBasedUrlShortener < Sinatra::Base
   end
 
   post '/' do
+    protected! if SinatraBasedUrlShortener.basic_auth_required?
+
     if SinatraBasedUrlShortener.ssl_required?
       # HTTP_X_FORWARDED_PROTO is set by Heroku (the scheme will show up as http)
       using_ssl = (request.scheme == 'https')
@@ -48,6 +54,8 @@ class SinatraBasedUrlShortener < Sinatra::Base
   end
 
   helpers do
+    include HttpBasicAuth # username and password are set in this module
+
     def full_url slug
       'http://' + request.host + '/' + slug
     end

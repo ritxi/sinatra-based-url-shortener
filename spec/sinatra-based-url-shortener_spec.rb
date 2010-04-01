@@ -15,7 +15,8 @@ describe SinatraBasedUrlShortener do
 
   before do
     UniqueSLUG.all.destroy
-    SinatraBasedUrlShortener.ssl_required = false # by default, this should be false in the specs
+    SinatraBasedUrlShortener.ssl_required = false
+    SinatraBasedUrlShortener.basic_auth_required = false
   end
 
   it 'should be able to shorten a URL' do
@@ -93,18 +94,6 @@ describe SinatraBasedUrlShortener do
     
     visit '/aaa/history'
     page.should have_no_content('127.0.0.1')
-
-    visit '/aaa'
-    visit '/aaa/history'
-    page.should have_content('127.0.0.1')
-    page.should have_no_content('5') # <--- times we'll visit
-
-    visit '/aaa'
-    visit '/aaa'
-    visit '/aaa'
-    visit '/aaa'
-    visit '/aaa/history'
-    page.should have_content('5')
   end
 
   it 'requires SSL when you POST to / (if SinatraBasedUrlShortener.ssl_required?)' do
@@ -115,6 +104,20 @@ describe SinatraBasedUrlShortener do
     Url.count.should == 0
 
     SinatraBasedUrlShortener.ssl_required = false
+
+    post '/', :url => 'http://www.google.com'
+    last_response.status.should == 200
+    Url.count.should == 1
+  end
+
+  it 'requires SSL when you POST to / (if SinatraBasedUrlShortener.basic_auth_required?)' do
+    SinatraBasedUrlShortener.basic_auth_required = true
+
+    post '/', :url => 'http://www.google.com'
+    last_response.status.should == 401
+    Url.count.should == 0
+
+    authorize 'admin', 'admin'
 
     post '/', :url => 'http://www.google.com'
     last_response.status.should == 200
