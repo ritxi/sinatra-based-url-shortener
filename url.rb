@@ -9,6 +9,10 @@ class Url
 
   has n, :clicks
 
+  def url= value
+    self['url'] = URI.parse(value).normalize.to_s
+  end
+
   def self.shorten url_to_shorten
     url      = Url.first_or_new :url => url_to_shorten
     url.slug = UniqueSLUG.next

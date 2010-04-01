@@ -1,10 +1,7 @@
+# Generates a unique tiny alphanumeric string (kindof like TinyURL)
 #
-# class for generating a unique tiny alphanumeric string
-#
-# kindof like TinyURL
-#
-# it's a database model because we persist 1 column in 
-# a table with the last_slug
+# This is a database model because we persist 1 column in 
+# a table to keep track of the #last_slug generated.
 #
 class UniqueSLUG
   include DataMapper::Resource

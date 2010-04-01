@@ -20,15 +20,15 @@ describe SinatraBasedUrlShortener do
     click_button 'Shorten'
 
     Url.count.should == 1
-    Url.first.url.should  == 'http://www.google.com'
+    Url.first.url.should  == 'http://www.google.com/'
     Url.first.slug.should == 'aaa'
 
     visit '/'
-    fill_in 'url', :with => 'http://www.not-google.com'
+    fill_in 'url', :with => 'http://www.not-google.com/'
     click_button 'Shorten'
 
     Url.count.should == 2
-    Url.last.url.should  == 'http://www.not-google.com'
+    Url.last.url.should  == 'http://www.not-google.com/'
     Url.last.slug.should == 'aab'
   end
 
@@ -40,7 +40,7 @@ describe SinatraBasedUrlShortener do
     click_button 'Shorten'
 
     Url.count.should == 1
-    Url.first.url.should  == 'http://www.google.com'
+    Url.first.url.should  == 'http://www.google.com/'
     Url.first.slug.should == 'aaa'
 
     visit '/'
@@ -60,7 +60,7 @@ describe SinatraBasedUrlShortener do
     
     get '/aaa'
     last_response.status.should == 302
-    last_response.headers['Location'].should == 'http://www.google.com'
+    last_response.headers['Location'].should == 'http://www.google.com/'
   end
 
   it 'tracks clicked URLs' do

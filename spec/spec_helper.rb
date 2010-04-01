@@ -1,5 +1,12 @@
 require File.dirname(__FILE__) + '/../sinatra-based-url-shortener'
-%w( spec capybara capybara/dsl rack/test ).each {|lib| require lib }
+%w( spec capybara capybara/dsl rack/test factory_girl factory_girl_extensions ).each {|lib| require lib }
+
+Factory.sequence(:string){|number| number.to_s }
+
+Factory.define :url do |o|
+  o.url  { "http://www.google.com/#{ :string.next }" }
+  o.slug { :string.next }
+end
 
 def transactional_specs rspec_config
   rspec_config.before do
