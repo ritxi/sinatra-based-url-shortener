@@ -3,11 +3,30 @@
 
 class SinatraBasedUrlShortener < Sinatra::Base
 
+  class << self
+    attr_accessor :ssl_required
+
+    def ssl_required?
+      (ssl_required == true) ? true : false
+    end
+  end
+
   get '/' do
     haml :index
   end
 
   post '/' do
+    if SinatraBasedUrlShortener.ssl_required?
+      # HTTP_X_FORWARDED_PROTO is set by Heroku (the scheme will show up as http)
+      using_ssl = (request.scheme == 'https')
+      using_ssl = (request.env['HTTP_X_FORWARDED_PROTO'] == 'https') unless using_ssl
+
+      unless using_ssl
+        status 403
+        return "SSL Required"
+      end
+    end
+
     @url = Url.shorten params[:url]
     haml :index
   end

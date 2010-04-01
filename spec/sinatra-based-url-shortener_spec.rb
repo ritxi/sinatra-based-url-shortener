@@ -4,12 +4,18 @@ describe SinatraBasedUrlShortener do
   include Rack::Test::Methods
 
   # for Rack::Test (which lets us test the response code, because Capybara doesn't support this)
+  #
+  # when we use get('/'), we are using Rack::Test
+  #
+  # when we visit('/'), we are using Capybara
+  #
   def app
     SinatraBasedUrlShortener.new
   end
 
   before do
     UniqueSLUG.all.destroy
+    SinatraBasedUrlShortener.ssl_required = false # by default, this should be false in the specs
   end
 
   it 'should be able to shorten a URL' do
@@ -99,6 +105,20 @@ describe SinatraBasedUrlShortener do
     visit '/aaa'
     visit '/aaa/history'
     page.should have_content('5')
+  end
+
+  it 'requires SSL when you POST to / (if SinatraBasedUrlShortener.ssl_required?)' do
+    SinatraBasedUrlShortener.ssl_required = true
+
+    post '/', :url => 'http://www.google.com'
+    last_response.status.should == 403
+    Url.count.should == 0
+
+    SinatraBasedUrlShortener.ssl_required = false
+
+    post '/', :url => 'http://www.google.com'
+    last_response.status.should == 200
+    Url.count.should == 1
   end
 
 end
