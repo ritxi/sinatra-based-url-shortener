@@ -1,5 +1,10 @@
 require File.dirname(__FILE__) + '/sinatra-based-url-shortener'
 
+if RACK_ENV == 'production'
+  SinatraBasedUrlShortener.ssl_required = true
+  SinatraBasedUrlShortener.http_basic_auth_required = true
+end
+
 dev_db = "sqlite3://#{ File.expand_path(File.dirname(__FILE__) + '/development.sqlite3') }"
 
 DataMapper.setup :default, ENV['DATABASE_URL'] || dev_db
