@@ -1,0 +1,8 @@
+dm-core --version '>= 0.10.2'
+dm-validations --version '>= 0.10.2'
+dm-timestamps --version '>= 0.10.2'
+dm-aggregates --version '>= 0.10.2'
+do_postgres --version '= 0.10.1'
+data_objects --version '= 0.10.1'
+datamapper --version '>= 0.10.2'
+haml
