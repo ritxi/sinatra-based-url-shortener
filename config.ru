@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/sinatra-based-url-shortener'
 
-if RACK_ENV == 'production'
+if ENV['RACK_ENV'] == 'production'
   SinatraBasedUrlShortener.ssl_required = true
   SinatraBasedUrlShortener.http_basic_auth_required = true
 end
