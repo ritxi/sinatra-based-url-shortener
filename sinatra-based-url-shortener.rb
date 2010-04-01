@@ -55,3 +55,14 @@ __END__
   %p
     Shortened URL:
     %a{ :href => full_url(@url.slug) }= full_url(@url.slug)
+
+%p
+  = Url.count
+  URLs shortened
+
+- if Url.count > 0
+  %p Recently shortened URLs
+  %ul
+    - for url in Url.all(:limit => 10, :order => :created_at.desc)
+      %li
+        %a{ :href => full_url(url.slug) }= url.url
