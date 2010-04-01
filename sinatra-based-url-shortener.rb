@@ -1,6 +1,5 @@
 %w( rubygems sinatra/base haml dm-core dm-aggregates dm-validations dm-timestamps ).each {|lib| require lib }
-require File.dirname(__FILE__) + '/unique_slug'
-require File.dirname(__FILE__) + '/url'
+%w( unique_slug url click ).each {|file| require File.dirname(__FILE__) + "/#{file}" }
 
 class SinatraBasedUrlShortener < Sinatra::Base
 
@@ -16,6 +15,7 @@ class SinatraBasedUrlShortener < Sinatra::Base
   get '/:slug' do |slug|
     @url = Url.first :slug => slug
     if @url
+      @url.clicks.create :ip_address => request.ip, :referrer => request.referrer
       redirect @url.url
     else
       status 404

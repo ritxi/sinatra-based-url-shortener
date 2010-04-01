@@ -7,6 +7,8 @@ class Url
 
   timestamps :at
 
+  has n, :clicks
+
   def self.shorten url_to_shorten
     url      = Url.first_or_new :url => url_to_shorten
     url.slug = UniqueSLUG.next

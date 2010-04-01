@@ -63,4 +63,21 @@ describe SinatraBasedUrlShortener do
     last_response.headers['Location'].should == 'http://www.google.com'
   end
 
+  it 'tracks clicked URLs' do
+    visit '/'
+    fill_in 'url', :with => 'http://www.google.com'
+    click_button 'Shorten'
+
+    Url.first.clicks.count.should == 0
+    
+    get '/aaa'
+    Url.first.clicks.count.should == 1
+    Url.first.clicks.first.ip_address.should == '127.0.0.1'
+    Url.first.clicks.first.created_at.should_not be_nil
+    Url.first.clicks.first.referrer.should == '/'
+
+    get '/aaa'
+    Url.first.clicks.count.should == 2
+  end
+
 end
