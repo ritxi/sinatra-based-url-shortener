@@ -13,7 +13,7 @@ class UniqueSLUG
   property :last_slug, String, :required => true
 
   # alphanumeric characters, case insensitive, stringified
-  AVAILABLE_CHARACTERS = ( ('a'..'z').to_a + (0..9).to_a ).map &:to_s
+  AVAILABLE_CHARACTERS = ( ('a'..'z').to_a + (0..9).to_a ).map {|char| char.to_s }
 
   class << self
     attr_accessor :reserved, :minimum_length
