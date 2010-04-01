@@ -1,4 +1,3 @@
-%w( rubygems sinatra/base haml dm-core dm-aggregates dm-validations dm-timestamps ).each {|lib| require lib }
 %w( unique_slug url click http_basic_auth ).each {|file| require File.dirname(__FILE__) + "/#{file}" }
 
 class SinatraBasedUrlShortener < Sinatra::Base

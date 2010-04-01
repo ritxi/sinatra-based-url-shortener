@@ -1,3 +1,6 @@
+%w( rubygems bundler ).each {|lib| require lib }
+Bundler.setup
+Bundler.require
 require File.dirname(__FILE__) + '/sinatra-based-url-shortener'
 
 if ENV['RACK_ENV'] == 'production'

@@ -1,5 +1,8 @@
+%w( rubygems bundler ).each {|lib| require lib }
+Bundler.setup   :default, :test
+Bundler.require :default, :test
+require 'capybara/dsl'
 require File.dirname(__FILE__) + '/../sinatra-based-url-shortener'
-%w( spec capybara capybara/dsl rack/test factory_girl factory_girl_extensions ).each {|lib| require lib }
 
 Factory.sequence(:string){|number| number.to_s }
 
