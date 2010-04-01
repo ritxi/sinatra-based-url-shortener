@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../sinatra-based-url-shortener'
-%w( spec capybara capybara/dsl ).each {|lib| require lib }
+%w( spec capybara capybara/dsl rack/test ).each {|lib| require lib }
 
 def transactional_specs rspec_config
   rspec_config.before do

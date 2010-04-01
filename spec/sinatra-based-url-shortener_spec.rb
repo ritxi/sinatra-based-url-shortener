@@ -1,6 +1,12 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe SinatraBasedUrlShortener do
+  include Rack::Test::Methods
+
+  # for Rack::Test (which lets us test the response code, because Capybara doesn't support this)
+  def app
+    SinatraBasedUrlShortener.new
+  end
 
   before do
     UniqueSLUG.all.destroy
@@ -42,6 +48,19 @@ describe SinatraBasedUrlShortener do
     click_button 'Shorten'
 
     Url.count.should == 1 # did not create a new one
+  end
+
+  it 'should redirect you to the full URL when you visit the slug' do
+    get '/aaa'
+    last_response.status.should == 404
+
+    visit '/'
+    fill_in 'url', :with => 'http://www.google.com'
+    click_button 'Shorten'
+    
+    get '/aaa'
+    last_response.status.should == 302
+    last_response.headers['Location'].should == 'http://www.google.com'
   end
 
 end

@@ -13,6 +13,16 @@ class SinatraBasedUrlShortener < Sinatra::Base
     haml :index
   end
 
+  get '/:slug' do |slug|
+    @url = Url.first :slug => slug
+    if @url
+      redirect @url.url
+    else
+      status 404
+      "Not Found"
+    end
+  end
+
   helpers do
     def full_url slug
       'http://' + request.host + '/' + slug
