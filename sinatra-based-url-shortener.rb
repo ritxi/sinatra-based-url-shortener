@@ -15,6 +15,22 @@ class SinatraBasedUrlShortener < Sinatra::Base
     end
   end
 
+  helpers do
+    include HttpBasicAuth # username and password are set in this module
+
+    def full_url slug
+      'http://' + request.host + '/' + slug
+    end
+
+    def ssl_path path
+      if SinatraBasedUrlShortener.ssl_required?
+        'https://' + request.host + path
+      else
+        path
+      end
+    end
+  end
+
   get '/' do
     haml :index
   end
@@ -53,78 +69,4 @@ class SinatraBasedUrlShortener < Sinatra::Base
     end
   end
 
-  helpers do
-    include HttpBasicAuth # username and password are set in this module
-
-    def full_url slug
-      'http://' + request.host + '/' + slug
-    end
-
-    def ssl_path path
-      if SinatraBasedUrlShortener.ssl_required?
-        'https://' + request.host + path
-      else
-        path
-      end
-    end
-  end
-
-  use_in_file_templates!
-
 end
-
-__END__
-
-@@ layout
-!!! XML
-!!! Strict
-%html
-  %head
-    %title Sinatra Based URL Shortener
-  %body
-    = yield
-
-@@ index
-%form{ :action => ssl_path('/'), :method => 'post' }
-  %label
-    URL to Shorten
-    %input{ :type => 'text', :placeholder => 'http://www.google.com/', :autofocus => true, :name => 'url', :id => 'url', :value => (@url ? @url.url : '') }
-  %input{ :type => 'submit', :value => 'Shorten' }
-
-- if @url
-  %p
-    Shortened URL:
-    %a{ :href => full_url(@url.slug) }= full_url(@url.slug)
-
-%p
-  = Url.count
-  URLs shortened
-
-- if Url.count > 0
-  %p Recently shortened URLs
-  %ul
-    - for url in Url.all(:limit => 10, :order => :created_at.desc)
-      %li
-        %a{ :href => full_url(url.slug) }= url.url
-        (
-        %a{ :href => "/#{ url.slug }/history" } history
-        )
-
-@@ history
-%dl
-  %dt Url
-  %dd
-    %a{ :href => @url.url }= @url.url
-
-  %dt Shortened
-  %dd
-    %a{ :href => full_url(@url.slug) }= full_url(@url.slug)
-
-  %dt Number of times visited
-  %dd= @url.clicks.count
-
-  %dt Recent history
-  %dd
-    %ul
-      - for click in @url.clicks.all(:limit => 10, :order => :created_at.desc)
-        %li== #{ click.ip_address } at #{ click.created_at } from #{ click.referrer }
